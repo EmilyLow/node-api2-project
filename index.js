@@ -2,7 +2,7 @@
 const express = require('express');
 
 //not sure about db
-const postsDB = require("./data/db");
+
 const postsRouter = require("./posts/posts-router");
 
 const server = express();
