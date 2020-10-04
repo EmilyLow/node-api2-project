@@ -14,6 +14,27 @@ router.get("/posts", (req, res) => {
         })
  })
 
+ router.get("/posts/:id", (req, res) => {
+     //!! Returns empty array if wrong id, why
+    posts.findById(req.params.id)
+    .then((post) => {
+        //The second bit of this serves no purpose but was a failed attempt to make bad ids not send blank arrays
+        if (post && post != []) {
+            res.status(201).json(post);
+        } else {
+            res.status(404).json({
+                message: "Post not found",
+            })
+        }
+        
+    } )
+    .catch( (error) => {
+        res.status(500).json({
+        error: "Error retrieving the user"
+        })})
+
+ })
+
  router.post("/posts", (req, res) => {
     if(!req.body.title || !req.body.contents) {
         //!!When do you use return and when is it automatic?
@@ -48,6 +69,57 @@ router.get("/posts", (req, res) => {
                  error: "There was an error while saving the post to the database" 
             })
         })
+ })
+
+ router.post("/posts/:id/comments", (req, res) => {
+
+    if (!req.body.text) {
+        res.status(400).json({
+			errorMessage: "Please provide text for the comment.",
+		}) 
+    }
+     let possiblePost = null;
+    !posts.findById(req.params.id)
+    .then((post) => {
+        possiblePost = post;
+        //!!!None of my 404s work. Why?
+        if(possiblePost === []) {
+            res.status(404).json({
+                errorMessage: "Post not found",
+            }) 
+        }
+    })
+    .catch((error) => {
+        res.status(404).json({
+			errorMessage: "Post not found",
+		}) 
+    })
+   
+
+    posts.insertComment(req.body)
+    .then((post) => {
+        // res.status(201).json(post)
+        //Roundabout way to post comment
+        
+        console.log("test console");
+        posts.findCommentById(post.id)
+        .then((result) => {
+            res.status(201).json(result);
+        } )
+        .catch(( (error) => 
+            res.status(500).json({
+            error: "There was an error while saving the post to the database after posting but while locating." 
+        })
+
+        ))
+    })
+    .catch((error) => {
+    
+        console.log(error)
+        res.status(500).json({
+            message: "Could not add comment",
+        })
+    })
 
 
  })
