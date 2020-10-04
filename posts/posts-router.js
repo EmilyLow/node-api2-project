@@ -35,6 +35,28 @@ router.get("/posts", (req, res) => {
 
  })
 
+ router.get("/posts/:id/comments", (req, res) => {
+    //!! Returns empty array if wrong id, why
+   posts.findPostComments(req.params.id)
+   .then((post) => {
+       
+       if (post && post != []) {
+           res.status(201).json(post);
+       } else {
+           res.status(404).json({
+               message: "Post not found",
+           })
+       }
+       
+   } )
+   .catch( (error) => {
+       res.status(500).json({
+       error: "Error retrieving the user"
+       })})
+
+})
+
+
  router.post("/posts", (req, res) => {
     if(!req.body.title || !req.body.contents) {
         //!!When do you use return and when is it automatic?
