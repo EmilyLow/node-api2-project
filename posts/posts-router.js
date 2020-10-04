@@ -168,7 +168,30 @@ router.get("/posts", (req, res) => {
 })
 
 
+router.put("/posts/:id", (req, res) => {
+	if (!req.body.title || !req.body.contents) {
+		return res.status(400).json({
+			message: "Missing body or contents",
+		})
+	}
 
+	posts.update(req.params.id, req.body)
+		.then((post) => {
+			if (post > 0) {
+				res.status(200).json(user)
+			} else {
+				res.status(404).json({
+					message: "The post could not be found",
+				})
+			}
+		})
+		.catch((error) => {
+			console.log(error)
+			res.status(500).json({
+				message: "Error updating the post",
+			})
+		})
+})
 
 
 module.exports = router
