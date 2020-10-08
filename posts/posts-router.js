@@ -1,3 +1,4 @@
+const e = require("express");
 const express = require("express");
 //database
 const posts = require("../data/db");
@@ -170,12 +171,12 @@ router.get("/posts", (req, res) => {
 
 router.put("/posts/:id", (req, res) => {
 	if (!req.body.title || !req.body.contents) {
-		return res.status(400).json({
+		 res.status(400).json({
 			message: "Missing body or contents",
 		})
 	}
-
-	posts.update(req.params.id, req.body)
+    else {
+        posts.update(req.params.id, req.body)
 		.then((post) => {
 			if (post > 0) {
 				res.status(200).json(user)
@@ -184,13 +185,17 @@ router.put("/posts/:id", (req, res) => {
 					message: "The post could not be found",
 				})
 			}
-		})
+        })
+        //Going straight to cathc after updating for some reason
 		.catch((error) => {
 			console.log(error)
 			res.status(500).json({
 				message: "Error updating the post",
 			})
 		})
+
+    }
+	
 })
 
 
